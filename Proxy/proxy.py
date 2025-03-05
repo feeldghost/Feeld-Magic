@@ -14,7 +14,7 @@ websocketPort = 8765
 clients = set()
 
 async def startWebsocket():
-    async def handler(websocket, path):
+    async def handler(websocket):
         clients.add(websocket)
 
         try:
