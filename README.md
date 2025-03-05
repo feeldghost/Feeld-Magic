@@ -1,5 +1,7 @@
 # Feeld Magic
 
+![poc](https://i.imgur.com/QOKnWhB.jpeg)
+
 ## Requirements
 
 Make sure you have the following installed -
