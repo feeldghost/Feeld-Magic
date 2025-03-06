@@ -10,6 +10,10 @@ Make sure you have the following installed -
 - [Node.js](https://nodejs.org/)
 - [Python3](https://www.python.org/)
 
+## Important
+- If you're using Android then you'll have to be rooted and have [Frida](https://frida.re/) installed
+- When running this on Android use [this](https://github.com/feeldghost/Feeld-Magic/blob/main/Frida/unpin.js) script to unpin ssl
+
 ## Installation
 
 ### 1) Clone the repository
