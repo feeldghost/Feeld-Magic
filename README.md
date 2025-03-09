@@ -1,6 +1,7 @@
 # Feeld Magic
 
-![poc](https://i.imgur.com/QOKnWhB.jpeg)
+## Information
+- If you setup and don't want to use the site, you can use the script to see your likes in the actual app
 
 ## Requirements
 
