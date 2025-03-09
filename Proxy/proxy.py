@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 # Libraries
 from requests import session
 from mitmproxy import http
@@ -12,6 +9,15 @@ import json
 appSession = session()
 websocketPort = 8765
 clients = set()
+
+# Blocked Hosts
+blockedHosts = [
+    "sdk-tracking.fra-01.braze.eu",
+    "sdk.fra-01.braze.eu",
+    "flag.lab.eu.amplitude.com",
+    "akqdms-launches.appsflyersdk.com",
+    "ep2.facebook.com"
+]
 
 async def startWebsocket():
     async def handler(websocket):
@@ -57,12 +63,32 @@ async def handleDataFromWebsocket(message, websocket):
     except json.JSONDecodeError:
         pass
 
+
+def request(flow: http.HTTPFlow) -> None:
+    if flow.request.pretty_host in blockedHosts:
+        flow.kill()
+
 def response(flow: http.HTTPFlow) -> None:
     if flow.request.url == "https://core.api.fldcore.com/graphql":
-        response_text = flow.response.get_text()
+        responseText = flow.response.get_text()
+        requestText = flow.request.get_text()
 
-        if "filteredWhoLikesMe" in response_text:
-            asyncio.create_task(sendToClients({ "type": "allLikesResponse", "body": response_text, "headers": dict(flow.request.headers) }))
+        if "filteredWhoLikesMe" in responseText:
+            asyncio.create_task(sendToClients({ "type": "allLikesResponse", "body": responseText, "headers": dict(flow.request.headers) }))
+
+        if "AuthProviderStatusSyncQuery" in requestText or "AuthProviderQuery" in requestText:
+            parsedData = json.loads(responseText)
+
+            parsedData["data"]["account"]["isMajestic"] = True
+
+            flow.response.text = json.dumps(parsedData)
+
+        if "AnalyticsQuery" in requestText:
+            parsedData = json.loads(responseText)
+
+            parsedData["data"]["profile"]["isMajestic"] = True
+
+            flow.response.text = json.dumps(parsedData)
 
 async def setup():
     await startWebsocket()
